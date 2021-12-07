@@ -142,7 +142,7 @@ class SequelizeMigrations {
       this.serverless,
       this.options
     );
-    const database = databaseConnectionUrlBuilder.build();
+    const database = await databaseConnectionUrlBuilder.build();
 
     const migrationsHandler = new MigrationsHandler(
       this.serverless,
