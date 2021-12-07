@@ -1,5 +1,4 @@
 const _ = require("lodash");
-const utils = require("./lib/utils");
 const DatabaseConnectionUrlBuilder = require("./lib/databaseConnectionUrlBuilder");
 const MigrationsHandler = require("./handlers/migrationsHandler");
 const SequelizeCliHandler = require("./handlers/sequelizeCliHandler");
@@ -11,30 +10,31 @@ class SequelizeMigrations {
 
     const dbConnectionOptions = {
       dbDialect: {
-        usage: "Specify the database dialect (one of: 'mysql', 'mariadb', 'postgres', 'mssql')",
-        default: ''
+        usage:
+          "Specify the database dialect (one of: 'mysql', 'mariadb', 'postgres', 'mssql')",
+        default: ""
       },
       dbHost: {
         usage: "Specify the database host",
-        default: ''
+        default: ""
       },
       dbPort: {
         usage: "Specify the database port",
-        default: ''
+        default: ""
       },
       dbName: {
         usage: "Specify the database name",
-        default: ''
+        default: ""
       },
       dbUsername: {
         usage: "Specify the database username",
-        default: ''
+        default: ""
       },
       dbPassword: {
         usage: "Specify the database password",
-        default: ''
+        default: ""
       }
-    }
+    };
 
     this.commands = {
       migrations: {
@@ -138,7 +138,10 @@ class SequelizeMigrations {
   }
 
   async setUpMigrationsHandler() {
-    const databaseConnectionUrlBuilder = new DatabaseConnectionUrlBuilder(this.serverless, this.options);
+    const databaseConnectionUrlBuilder = new DatabaseConnectionUrlBuilder(
+      this.serverless,
+      this.options
+    );
     const database = databaseConnectionUrlBuilder.build();
 
     const migrationsHandler = new MigrationsHandler(

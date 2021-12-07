@@ -5,7 +5,12 @@ const AWS = require("aws-sdk");
 AWS.config.update({ region: "aws_region" });
 
 module.exports = class MigrationsHandler {
-  constructor(serverless, database, path = "./migrations/sequelize", verbose = false) {
+  constructor(
+    serverless,
+    database,
+    path = "./migrations/sequelize",
+    verbose = false
+  ) {
     this.serverless = serverless;
     this.database = database;
     this.verbose = verbose;
