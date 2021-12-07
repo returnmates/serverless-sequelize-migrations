@@ -137,7 +137,7 @@ class SequelizeMigrations {
     this.serverless.cli.generateCommandsHelp(["migrations"]);
   }
 
-  setUpMigrationsHandler() {
+  async setUpMigrationsHandler() {
     const databaseConnectionUrlBuilder = new DatabaseConnectionUrlBuilder(this.serverless, this.options);
     const database = databaseConnectionUrlBuilder.build();
 
@@ -148,7 +148,7 @@ class SequelizeMigrations {
       this.verbose
     );
 
-    migrationsHandler.initialize();
+    await migrationsHandler.initialize();
 
     return migrationsHandler;
   }

@@ -1,27 +1,47 @@
 const Sequelize = require("sequelize");
 const Umzug = require("umzug");
+const AWS = require("aws-sdk");
+
+AWS.config.update({ region: "aws_region" });
 
 module.exports = class MigrationsHandler {
-  constructor(serverless, database, path = "./migrations", verbose = false) {
+  constructor(serverless, database, path = "./migrations/sequelize", verbose = false) {
     this.serverless = serverless;
     this.database = database;
     this.verbose = verbose;
     this.path = path;
   }
 
-  initialize() {
+  async initialize() {
     this.serverless.cli.log("Setting up connections...");
-    this.sequelize = this.initSequelize();
+    this.sequelize = await this.initSequelize();
     this.umzug = this.initUmzug();
   }
 
-  initSequelize() {
-    return new Sequelize(this.database.CONNECTION_URL, {
+  async initSequelize() {
+    const rdsConfig = await this.getRDSConfig();
+
+    const sequelize = new Sequelize({
+      host: rdsConfig.host,
+      username: rdsConfig.username,
+      password: rdsConfig.password,
+      database: process.env.RDS_CLUSTER_NAME,
+      port: rdsConfig.port,
+      dialect: rdsConfig.engine,
       define: {
         freezeTableName: true
       },
       logging: this.verbose
     });
+    await sequelize.authenticate();
+
+    return sequelize;
+    // return new Sequelize(this.database.CONNECTION_URL, {
+    //   define: {
+    //     freezeTableName: true
+    //   },
+    //   logging: this.verbose
+    // });
   }
 
   initUmzug() {
@@ -38,6 +58,18 @@ module.exports = class MigrationsHandler {
         path: this.path
       }
     });
+  }
+
+  async getRDSConfig() {
+    const secretsManager = new AWS.SecretsManager();
+    const getSecretValueRequest = {
+      SecretId: process.env.RDS_SECRET_STORE
+    };
+    const rdsConfigSecretValue = await secretsManager
+      .getSecretValue(getSecretValueRequest)
+      .promise();
+
+    return JSON.parse(rdsConfigSecretValue.SecretString);
   }
 
   async migrate(revertError = false) {

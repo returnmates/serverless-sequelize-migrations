@@ -24,6 +24,7 @@
   "author": "Manoel Ferreira Neto",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1044.0",
     "lodash": "^4.17.15",
     "sequelize": "^5.21.9",
     "sequelize-cli": "^5.5.1",
